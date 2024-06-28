@@ -1,0 +1,75 @@
+﻿@model IEnumerable<MusicEvents.Models.Event>
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<h1>Events</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Event</a>
+</p>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Genre</th>
+                    <th>Artist</th>
+                    <th>Date</th>
+                    <th>Ticket Price</th>
+                    <th>Available Seats</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr id="event-@item.Id">
+                        <td>@item.Title</td>
+                        <td>@item.Location</td>
+                        <td>@item.Genre</td>
+                        <td>@item.Artist</td>
+                        <td>@item.Date.ToShortDateString()</td>
+                        <td>@item.TicketPrice</td>
+                        <td>@item.AvailableSeats</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <button type="button" class="btn btn-sm btn-danger delete-button" data-id="@item.Id">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.delete-button').on('click', function () {
+                var id = $(this).data('id');
+                if (confirm('Are you sure you want to delete this event?')) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteConfirmed")/' + id,
+                        type: 'POST',
+                        success: function (result) {
+                            if (result.success) {
+                                $('#event-' + id).remove();
+                            } else {
+                                alert('Error deleting event.');
+                            }
+                        },
+                        error: function () {
+                            alert('Error deleting event.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
